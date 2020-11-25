@@ -1,0 +1,328 @@
+	<!DOCTYPE html>
+	<html>
+	<head>
+	<title>Snake Game In Javascript</title>
+	</head>
+
+<!-- The HTML for our snake game!-->
+<body>
+	<canvas id="borders" width="1500" height="110"></canvas>
+<!DOCTYPE html>
+<html>
+
+
+  <body>
+    <div id="points">0</div>
+    
+    <div id="pointstwo">0</div>
+    <canvas id="snakeboard" width="800" height="400"></canvas>
+
+    <style>
+      #snakeboard {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+        
+      }
+        
+        #points{
+            text-align:right;
+            font-size: 30;
+        }
+        #pointstwo{
+            text-align:left;
+            font-size: 30;
+        }
+    </style>
+  </body>
+
+  <script>
+        
+    const board_border = 'black';
+    const board_background = 'lightyellow';
+    const snake_col = 'lightgreen';
+    const snake_border = 'darkblue';
+    
+    let points=0;
+    let pointstwo=0;
+      
+    let turning=false;
+    let turningtwo=false;  
+      
+    let foodPos_x;
+    let foodPos_y;
+    //Snake automatically running to the right.
+      
+    let dxTwo=10; 
+    let dyTwo=0;
+
+    let snakeTwo = [
+      {x2: 300, y2: 200},
+      {x2: 290, y2: 200},
+      {x2: 280, y2: 200},
+      {x2: 270, y2: 200},
+      {x2: 260, y2: 200}
+    ]
+    
+    let dx=10; 
+    let dy=0;
+
+    let snake = [
+      {x: 200, y: 200},
+      {x: 190, y: 200},
+      {x: 180, y: 200},
+      {x: 170, y: 200},
+      {x: 160, y: 200}
+    ]
+ 
+    const snakeboard = document.getElementById("snakeboard");
+    const snakeboard_ctx = snakeboard.getContext("2d");
+    main();
+    createFood();
+      
+      //Event listener fired for all keys. Function in second argument describes which!
+    document.addEventListener("keydown",moveSnake); 
+    document.addEventListener("keydown",moveSnakeTwo); 
+        
+   
+    function main() {
+	if(gameEnded()) return;
+	turning=false;
+    turningtwo=false;
+        
+	setTimeout(function onTick(){
+
+        clearCanvas();
+        foodShape();
+        
+        snake_movesTwo();
+        snake_moves();
+        
+        drawSnakeTwo();
+        drawSnake();
+        
+        main();
+	},100)
+    }
+    
+     
+    function clearCanvas() {
+      snakeboard_ctx.fillStyle = board_background;
+      snakeboard_ctx.strokestyle = board_border;
+      snakeboard_ctx.fillRect(0, 0, snakeboard.width, snakeboard.height);
+      snakeboard_ctx.strokeRect(0, 0, snakeboard.width, snakeboard.height);
+    }
+     
+    function drawSnake() {
+   
+      snake.forEach(drawSnakePart)
+    }
+    function drawSnakeTwo(){
+    snakeTwo.forEach(drawSnakePartTwo)
+    }
+    
+      
+    function foodShape(){
+        snakeboard_ctx.fillStyle='red';
+        snakeboard_ctx.strokeStyle='darkred';
+        snakeboard_ctx.fillRect(foodPos_x, foodPos_y, 10, 10);
+        snakeboard_ctx.strokeRect(foodPos_x, foodPos_y, 10, 10);
+        
+    }
+       function drawSnakePartTwo(snakePartTwo) {
+
+    
+      snakeboard_ctx.fillStyle = 'pink';
+      snakeboard_ctx.strokestyle = snake_border;
+      snakeboard_ctx.fillRect(snakePartTwo.x2, snakePartTwo.y2, 10, 10);
+      snakeboard_ctx.strokeRect(snakePartTwo.x2, snakePartTwo.y2, 10, 10);
+    }
+    
+    function drawSnakePart(snakePart) {
+
+    
+      snakeboard_ctx.fillStyle = snake_col;
+      snakeboard_ctx.strokestyle = snake_border;
+      snakeboard_ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
+      snakeboard_ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
+    }
+    
+   //Let's add collision checks to see if the snake hits itself or a wall:
+
+    function gameEnded(){
+        
+        for (let i=4;i<snake.length;i++){
+            if(snake[i].x==snake[0].x && snake[i].y==snake[0].y) return true;
+        }
+       
+        
+        for (let ia=4;ia<snakeTwo.length;ia++){
+            if(snakeTwo[ia].x2==snakeTwo[0].x2 && snakeTwo[ia].y2==snakeTwo[0].y2) return true;
+        }
+        
+         //If snakes bite each other's heads, it's over!
+          for (let ib=4;ib<snakeTwo.length;ib++){
+            if(snakeTwo[0].x2==snake[0].x && snakeTwo[0].y2==snake[0].y) return true;
+              
+        }
+         
+        //If snake bites each other's tails, the game is over!
+          for (let ic=4;ic<snake.length;ic++){
+            if(snakeTwo[0].x2==snake[ic].x && snakeTwo[0].y2==snake[ic].y) return true;
+              
+        }
+          for (let id=4;id<snakeTwo.length;id++){
+            if(snakeTwo[id].x2==snake[0].x && snakeTwo[id].y2==snake[0].y) return true;
+              
+        }
+         
+    
+        
+        const hitWallRight2=snakeTwo[0].x2<0;
+        const hitWallLeft2=snakeTwo[0].x2>snakeboard.width-10;
+        const hitTop2=snakeTwo[0].y2<0;
+        const hitBottom2=snakeTwo[0].y2>snakeboard.height-10;
+  
+        
+        const hitWallRight=snake[0].x<0;
+        const hitWallLeft=snake[0].x>snakeboard.width-10;
+        const hitTop=snake[0].y<0;
+        const hitBottom=snake[0].y>snakeboard.height-10;
+        
+        return hitWallRight||hitWallLeft||hitTop||hitBottom||hitWallRight2||hitWallLeft2||hitTop2||hitBottom2;
+        
+        
+    
+        
+        
+	}
+      
+   function foodAppearance(min,max){
+     
+       return Math.round((Math.random() * (max-min) + min) / 10) * 10;
+       
+    }
+      
+    function createFood(){
+        foodPos_x=foodAppearance(0,snakeboard.width-10);
+        foodPos_y=foodAppearance(0,snakeboard.height-10);
+         
+        snake.forEach(function hasSnakeEaten(part){
+           const haseaten=part.x==foodPos_x && part.y==foodPos_y;
+            
+            if(haseaten) createFood();
+        });
+        
+         snakeTwo.forEach(function hasSnakeEatentwo(part){
+           const haseatenTwo=part.x2==foodPos_x && part.y2==foodPos_y;
+            
+            if(haseatenTwo) createFood();
+        });
+        
+        
+        
+        
+    }
+      
+    
+    function moveSnakeTwo(eventtwo){
+        const LEFTTWO=65;
+        const RIGHTTWO=68;
+        const UPTWO=87;
+        const DOWNTWO=83;
+        
+        if(turningtwo) return;
+        turningtwo=true;
+        const PressedTwo=eventtwo.keyCode;
+            
+        const GO_UPTWO=dyTwo===-10;
+        const GO_DOWNTWO=dyTwo===10;
+        const GO_RIGHTTWO=dxTwo===10;
+        const GO_LEFTTWO=dxTwo===-10;
+        
+                 
+        if (PressedTwo===LEFTTWO&&!GO_RIGHTTWO){dxTwo=-10;dyTwo=0;}
+        if (PressedTwo===RIGHTTWO&&!GO_LEFTTWO){dxTwo=10;dyTwo=0;}
+        if (PressedTwo===UPTWO&&!GO_DOWNTWO){dxTwo=0;dyTwo=-10;}
+        if (PressedTwo===DOWNTWO&&!GO_UPTWO){dxTwo=0;dyTwo=10;}
+        
+        
+    }  
+      
+    function moveSnake(event){
+        const LEFT=37;
+        const RIGHT=39;
+        const UP=38;
+        const DOWN=40;
+        
+        if(turning) return;
+        turning=true;
+        
+        const Pressed=event.keyCode;
+    
+        const GO_UP=dy===-10;
+        const GO_DOWN=dy===10;
+        const GO_RIGHT=dx===10;
+        const GO_LEFT=dx===-10;
+        
+        if (Pressed===LEFT&&!GO_RIGHT){dx=-10;dy=0;}
+        if (Pressed===RIGHT&&!GO_LEFT){dx=10;dy=0;}
+        if (Pressed===UP&&!GO_DOWN){dx=0;dy=-10;}
+        if (Pressed===DOWN&&!GO_UP){dx=0;dy=10;}
+        
+        
+    }
+      
+              
+  // To be called when
+      
+    function snake_movesTwo(){
+        
+        
+    const headTwo={x2: snakeTwo[0].x2+dxTwo, y2: snakeTwo[0].y2+dyTwo};
+    snakeTwo.unshift(headTwo);
+
+   const hasEatenTwo=snakeTwo[0].x2===foodPos_x&&snakeTwo[0].y2===foodPos_y;
+       
+    if(hasEatenTwo){
+        pointstwo+=10;
+        document.getElementById('pointstwo').innerHTML=pointstwo;
+        createFood();
+        
+    } 
+       
+              else{
+         
+        snakeTwo.pop();
+
+    }
+        
+    }  
+   function snake_moves(){
+   const head={x: snake[0].x+dx, y: snake[0].y+dy};
+   snake.unshift(head);
+
+   const hasEaten=snake[0].x===foodPos_x&&snake[0].y===foodPos_y;
+       
+    if(hasEaten){
+        points+=10;
+        document.getElementById('points').innerHTML=points;
+        createFood();
+        
+    } 
+       
+       
+       else{
+         
+        snake.pop();
+      
+        
+        
+    }
+   
+  }
+
+  </script>
+</html>
