@@ -12,14 +12,20 @@ The two snake objects can also interact with one another by **biting the tail or
 
 
 **The controls for player one are:**
-\n Upkey= Go up
+Upkey= Go up
+
 Rightkey= Go right
+
 Downkey= Go down
+
 Leftkey = Go left
 
 
 **The controls for player two are:**
 w= Go up
+
 a= Go left
+
 d= Go right
+
 s= Go down
